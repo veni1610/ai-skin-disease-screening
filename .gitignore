@@ -1,0 +1,6 @@
+dataset/
+models/
+venv/
+__pycache__/
+.ipynb_checkpoints/
+*.pth
