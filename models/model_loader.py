@@ -14,7 +14,7 @@ def get_mobilenet(num_classes):
 
 def get_efficientnet(num_classes):
     model = timm.create_model(
-        "efficientnetv2_s",
+        "tf_efficientnetv2_s",
         pretrained=True,
         num_classes=num_classes
     )
