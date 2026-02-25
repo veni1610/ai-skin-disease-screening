@@ -27,12 +27,17 @@ risk_map = {
 }
 
 explanation_map = {
-    "acne": "Inflamed red papules and pustules detected.",
-    "melanoma": "Irregular borders and dark pigmentation observed.",
-    "bcc": "Shiny nodular lesion pattern detected.",
-    "eczema": "Red itchy patches with dry texture observed.",
-    "psoriasis": "Thick scaly plaques detected.",
-    "seborrheic_keratosis": "Waxy brown benign lesion observed."
+    "acne": "Acne is a common inflammatory skin condition characterized by red pimples and pustules. It usually occurs due to clogged pores, excess oil production, and bacterial activity.",
+
+    "melanoma": "Melanoma is a potentially serious skin cancer often identified by irregular borders and dark pigmentation. Early detection is critical as it can spread rapidly if untreated.",
+
+    "bcc": "Basal Cell Carcinoma is a type of skin cancer that typically appears as a shiny or pearly lesion. It grows slowly but requires medical treatment to prevent tissue damage.",
+
+    "eczema": "Eczema is a chronic inflammatory skin condition causing redness, dryness, and itching. It is often linked to allergies or immune system sensitivity.",
+
+    "psoriasis": "Psoriasis is an autoimmune condition characterized by thick, scaly plaques on the skin. It results from rapid skin cell turnover and may require long-term management.",
+
+    "seborrheic_keratosis": "Seborrheic keratosis is a benign skin growth that appears waxy or slightly raised. It is generally harmless and does not require treatment unless irritated."
 }
 
 recommendation_map = {
@@ -42,6 +47,12 @@ recommendation_map = {
     "seborrheic_keratosis": "Usually benign. Monitor for changes.",
     "bcc": "Immediate dermatologist consultation recommended.",
     "melanoma": "Urgent biopsy and specialist consultation required."
+}
+
+risk_explanation_map = {
+    "Low": "This condition is generally non-life-threatening and may improve with basic skincare or monitoring.",
+    "Moderate": "This condition may require medical consultation to prevent progression or complications.",
+    "High": "This condition may indicate a potentially serious issue and requires immediate dermatological evaluation."
 }
 
 # -------- Load EfficientNet --------
@@ -96,10 +107,12 @@ def predict(image_file, symptoms=None):
         if symptoms.get("pain") and risk == "Low":
             risk = "Moderate"
 
+    base_risk = risk_map[disease]
+
     return {
         "disease": disease,
         "confidence": round(confidence, 3),
-        "risk": risk,
-        "explanation": explanation_map[disease],
-        "recommendation": recommendation_map[disease]
+        "risk": base_risk,
+        "risk_explanation": risk_explanation_map[base_risk],
+        "explanation": explanation_map[disease]
     }
