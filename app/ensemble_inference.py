@@ -52,4 +52,4 @@ def predict_ensemble(image_path):
         prediction = torch.argmax(final_prob, dim=1)
 
     return class_names[prediction.item()]
-print(predict_ensemble("dataset/processed/test/acne/acne-cystic-12.jpg"))
+print(predict_ensemble("dataset/processed/test/acne/07Acne081101.jpg"))

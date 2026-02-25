@@ -12,6 +12,15 @@ train_dir = "dataset/processed/train"
 val_dir = "dataset/processed/val"
 test_dir = "dataset/processed/test"
 
+class_names = [
+    "acne",
+    "bcc",
+    "eczema",
+    "melanoma",
+    "psoriasis",
+    "seborrheic_keratosis"
+]
+
 _, _, test_loader = get_dataloaders(
     train_dir, val_dir, test_dir, batch_size=16
 )
@@ -35,7 +44,7 @@ for name, (path, model_fn) in models_info.items():
     model.load_state_dict(torch.load(path, map_location=device))
     model.to(device)
 
-    acc, f1, _ = evaluate_model(model, test_loader)
+    acc, f1, _ = evaluate_model(model, test_loader,class_names)
 
     results[name] = (acc, f1)
 
