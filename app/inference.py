@@ -47,7 +47,7 @@ recommendation_map = {
 # -------- Load EfficientNet --------
 efficientnet = get_efficientnet(num_classes=6)
 efficientnet.load_state_dict(
-    torch.load("models/efficientnet_final_v1.pth", map_location=device)
+    torch.load("models/efficientnet.pth", map_location=device)
 )
 efficientnet.to(device)
 efficientnet.eval()
@@ -55,7 +55,7 @@ efficientnet.eval()
 # -------- Load ViT --------
 vit = get_vit_tiny(num_classes=6)
 vit.load_state_dict(
-    torch.load("models/vit_final_v1.pth", map_location=device)
+    torch.load("models/vit.pth", map_location=device)
 )
 vit.to(device)
 vit.eval()
