@@ -13,7 +13,7 @@ _, _, test_loader = get_dataloaders(
     "dataset/processed/test",
     batch_size=16
 )
-print(len(test_loader.dataset))
+#print(len(test_loader.dataset))
 
 all_preds = []
 all_labels = []
@@ -30,7 +30,7 @@ with torch.no_grad():
         prob2 = F.softmax(out2, dim=1)
 
         # Soft voting ensemble
-        final_prob =  (prob1 + prob2)/2 
+        final_prob = 0.6 * prob1 + 0.4 * prob2
 
         preds = torch.argmax(final_prob, dim=1)
 
