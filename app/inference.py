@@ -6,6 +6,9 @@ from PIL import Image
 from torchvision import transforms
 from models.model_loader import get_efficientnet, get_vit_tiny
 
+from utils.xai import generate_gradcam
+import cv2
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class_names = [
@@ -93,6 +96,16 @@ def predict(image_file, symptoms=None):
 
         pred = torch.argmax(final_prob, dim=1)
 
+    target_layer = efficientnet.conv_head
+
+    heatmap = generate_gradcam(
+        efficientnet,
+        image,
+        target_layer
+    )
+
+    cv2.imwrite("heatmap.jpg", heatmap)
+
     disease = class_names[pred.item()]
     confidence = float(final_prob[0][pred].item())
 
@@ -114,5 +127,6 @@ def predict(image_file, symptoms=None):
         "confidence": round(confidence, 3),
         "risk": base_risk,
         "risk_explanation": risk_explanation_map[base_risk],
-        "explanation": explanation_map[disease]
+        "explanation": explanation_map[disease],
+        "heatmap" : "heatmap.jpg"
     }

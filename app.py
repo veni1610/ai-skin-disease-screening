@@ -1,10 +1,10 @@
+print("INFERENCE FILE LOADED")
 import streamlit as st
 from app.inference import predict
 import tempfile
-
+import os
 
 st.set_page_config(page_title="AI Skin Screening", layout="centered")
-
 
 st.title("🩺 AI Skin Disease Screening System")
 st.markdown("Upload an image and answer a few questions.")
@@ -25,20 +25,29 @@ duration = st.selectbox(
 if uploaded_file is not None:
     st.image(uploaded_file, caption="Uploaded Image", width="stretch")
 
+    #st.subheader("Explainable AI (Model Attention Map)")
+    #st.image(result["heatmap"])
+
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
         tmp.write(uploaded_file.read())
         temp_path = tmp.name
 
     if st.button("🔍 Analyze"):
+        st.write("Analyze button pressed")
         st.markdown("---")
         st.caption("⚠ This AI-based screening tool provides preliminary assessment only and should not be considered a medical diagnosis. Please consult a certified dermatologist for professional evaluation.")
 
+        #st.write("Calling predict function")
         result = predict(temp_path)
+
+        #st.write("Prediction kazhinj")
+        #st.write(result)
 
         disease = result["disease"]
         confidence = result["confidence"]
         risk = result["risk"]
         explanation = result["explanation"]
+        
 
         # --- Risk Adjustment Based on Symptoms ---
         base_risk = result["risk"]
@@ -75,12 +84,40 @@ if uploaded_file is not None:
             st.write(consultation)
             
             st.subheader("Condition Explanation")
-            st.write(explanation)   
-            st.write(f"Condition Explanation: {explanation}")
+            st.write(explanation)
+
+            st.subheader("Reference Images for Comparison")
+
+            image_folder = f"assets/{disease}"
+
+            if os.path.exists(image_folder):
+                images = os.listdir(image_folder)
+
+                cols = st.columns(3)
+
+                for i, img in enumerate(images[:2]):  # show up to 3 images
+                    with cols[i]:
+                        st.image(
+                            os.path.join(image_folder, img),
+                            caption=f"Example of {disease}",
+                            use_container_width=True
+                        )
+
+            #st.subheader("Expainable AI (Model Attention Map)")
+            #st.image(result["heatmap"], caption="Highlighted regions influencing the predction")
+            if "heatmap" in result:
+                st.subheader("Explainable AI (Model Attention Map)")
+                st.image(result["heatmap"], caption="Highlighted regions influencing the prediction")
+
+                st.caption(
+    "This heatmap shows the regions of the skin image that the AI model focused on when making its prediction. "
+    "Red and yellow areas indicate higher importance, meaning these regions contributed more to the decision. "
+    "Blue or darker areas had little influence on the prediction."
+                )
             
         if risk == "High":
             st.error("Recommendation: The detected condition may be serious. Please consult a certified dermatologist immediately for further examination and possible biopsy.")
         elif risk == "Moderate":
             st.warning("Recommendation: It is advisable to seek medical consultation. Early evaluation can prevent worsening of symptoms.")
         else:
-            st.success("Recommendation: This appears to be a low-risk condition. Maintain proper skin hygiene and monitor for any changes.").success("Recommendation: Monitor condition and maintain hygiene.")
+            st.success("Recommendation: This appears to be a low-risk condition. Maintain proper skin hygiene and monitor for any changes.")
